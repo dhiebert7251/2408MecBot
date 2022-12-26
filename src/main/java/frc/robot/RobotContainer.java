@@ -9,7 +9,6 @@ import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.Autos;
 import frc.robot.commands.DriveWithJoysticks;
 import frc.robot.subsystems.Drivetrain;
-import frc.robot.subsystems.ExampleSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -54,6 +53,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return Autos.exampleAuto(m_DriveWithJoysticks);
+    return Autos.doNothing();
   }
 }

@@ -8,6 +8,7 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.Drivetrain;
+import frc.robot.Robot;
 
 public class DriveWithJoysticks extends CommandBase {
   private final XboxController m_controller = new XboxController(0);
@@ -33,8 +34,8 @@ public class DriveWithJoysticks extends CommandBase {
 
   /** Creates a new DriveWithJoysticks. 
    * @return */
-  //public void driveWithJoysticks(boolean fieldRelative) {
-  public void driveWithJoysticks(fod){
+  public void driveWithJoysticks(boolean fieldRelative) {
+
     // Use addRequirements() here to declare subsystem dependencies.
      // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
