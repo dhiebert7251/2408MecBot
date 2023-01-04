@@ -21,7 +21,7 @@ import edu.wpi.first.math.kinematics.MecanumDriveKinematics;
 import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.AnalogGyro;
+//import edu.wpi.first.wpilibj.AnalogGyro;
 //import edu.wpi.first.wpilibj.Encoder;
 //import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 //import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
@@ -29,8 +29,8 @@ import edu.wpi.first.wpilibj.AnalogGyro;
 
 public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
-  public static final double kMaxSpeed = 3.0; // 3 meters per second
-  public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
+  //public static final double kMaxSpeed = 3.0; // 3 meters per second
+  //public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
   //private final MotorController m_frontLeftMotor = new PWMSparkMax(1);
   private final CANSparkMax m_frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR, MotorType.kBrushless);
@@ -184,7 +184,7 @@ public class Drivetrain extends SubsystemBase {
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, rot, m_gyro.getRotation2d())
                 : new ChassisSpeeds(xSpeed, ySpeed, rot));
-    mecanumDriveWheelSpeeds.desaturate(kMaxSpeed);
+    mecanumDriveWheelSpeeds.desaturate(Constants.MAX_SPEED);
     setSpeeds(mecanumDriveWheelSpeeds);
   }
 

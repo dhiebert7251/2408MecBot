@@ -32,6 +32,9 @@ public final class Constants {
     public static final double WHEEL_DIAMETER_M = WHEEL_DIAMETER_IN * IN_TO_METERS;
     public static final double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER_M * Math.PI;
 
+    public static final double MAX_SPEED = 3.0;
+    public static final double MAX_ANGULAR_SPEED = Math.PI;
+
     //drivetrain feedforward - change for our robot
     public static final double FF_STATIC_GAIN = 1;
     public static final double FF_VELOCITY_GAIN = 3;
@@ -40,6 +43,16 @@ public final class Constants {
     public static final int DRIVER_JOYSTICK = 0;
     public static final int OPERATOR_JOYSTICK = 1;
 
+    //slew rate 3 --> 1/3 sec from 0 to 1
+    public static final int D_JOYSTICK_LEFT_X_SPEED_LIMIT = 3;
+    public static final int D_JOYSTICK_LEFT_Y_SPEED_LIMIT = 3;
+    public static final int D_JOYSTICK_RIGHT_X_SPEED_LIMIT = 3;
+    public static final int D_JOYSTICK_RIGHT_Y_SPEED_LIMIT = 3;
+
+    public static final int O_JOYSTICK_LEFT_X_SPEED_LIMIT = 3;
+    public static final int O_JOYSTICK_LEFT_Y_SPEED_LIMIT = 3;
+    public static final int O_JOYSTICK_RIGHT_X_SPEED_LIMIT = 3;
+    public static final int O_JOYSTICK_RIGHT_Y_SPEED_LIMIT = 3;
     
 	//Joystick button/axis maps
     public static final int DRIVER_JOYSTICK_LEFT_X_AXIS = 0;
