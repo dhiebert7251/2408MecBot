@@ -6,7 +6,9 @@ package frc.robot;
 
 import java.text.MessageFormat.Field;
 
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Drivetrain;
@@ -21,6 +23,7 @@ import frc.robot.subsystems.Drivetrain;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
   private final Drivetrain m_mecanum = new Drivetrain();
+  private final PowerDistribution m_pdp = new PowerDistribution();
 
   public boolean fod;
 
@@ -35,6 +38,10 @@ public class Robot extends TimedRobot {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
     m_robotContainer = new RobotContainer();
+
+    // Put the PDP itself to the dashboard
+    SmartDashboard.putData("PDP", m_pdp);
+
   }
 
   /**
@@ -51,6 +58,9 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    
+    // send stuff to smartDashboard
+    telemetry();
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -112,4 +122,35 @@ public class Robot extends TimedRobot {
   /** This function is called periodically whilst in simulation. */
   @Override
   public void simulationPeriodic() {}
+
+  public void telemetry() {
+        // Get the current going through channel 7, in Amperes.
+    // The PDP returns the current in increments of 0.125A.
+    // At low currents the current readings tend to be less accurate.
+    double current7 = m_pdp.getCurrent(7);
+    SmartDashboard.putNumber("Current Channel 7", current7);
+
+    // Get the voltage going into the PDP, in Volts.
+    // The PDP returns the voltage in increments of 0.05 Volts.
+    double voltage = m_pdp.getVoltage();
+    SmartDashboard.putNumber("Voltage", voltage);
+
+    // Retrieves the temperature of the PDP, in degrees Celsius.
+    double temperatureCelsius = m_pdp.getTemperature();
+    SmartDashboard.putNumber("Temperature", temperatureCelsius);
+
+    // Get the total current of all channels.
+    double totalCurrent = m_pdp.getTotalCurrent();
+    SmartDashboard.putNumber("Total Current", totalCurrent);
+
+    // Get the total power of all channels.
+    // Power is the bus voltage multiplied by the current with the units Watts.
+    double totalPower = m_pdp.getTotalPower();
+    SmartDashboard.putNumber("Total Power", totalPower);
+
+    // Get the total energy of all channels.
+    // Energy is the power summed over time with units Joules.
+    double totalEnergy = m_pdp.getTotalEnergy();
+    SmartDashboard.putNumber("Total Energy", totalEnergy);
+  }
 }

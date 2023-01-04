@@ -5,6 +5,13 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
+
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -15,24 +22,33 @@ import edu.wpi.first.math.kinematics.MecanumDriveOdometry;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelPositions;
 import edu.wpi.first.math.kinematics.MecanumDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+//import edu.wpi.first.wpilibj.Encoder;
+//import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+//import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+
 
 public class Drivetrain extends SubsystemBase {
   /** Creates a new Drivetrain. */
   public static final double kMaxSpeed = 3.0; // 3 meters per second
   public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
-  private final MotorController m_frontLeftMotor = new PWMSparkMax(1);
-  private final MotorController m_frontRightMotor = new PWMSparkMax(2);
-  private final MotorController m_backLeftMotor = new PWMSparkMax(3);
-  private final MotorController m_backRightMotor = new PWMSparkMax(4);
+  //private final MotorController m_frontLeftMotor = new PWMSparkMax(1);
+  private final CANSparkMax m_frontLeftMotor = new CANSparkMax(Constants.FRONT_LEFT_MOTOR, MotorType.kBrushless);
+  //private final MotorController m_frontRightMotor = new PWMSparkMax(2);
+  private final CANSparkMax m_frontRightMotor = new CANSparkMax(Constants.FRONT_RIGHT_MOTOR,MotorType.kBrushless);
+  //private final MotorController m_backLeftMotor = new PWMSparkMax(3);
+  private final CANSparkMax m_backLeftMotor = new CANSparkMax(Constants.BACK_LEFT_MOTOR, MotorType.kBrushless);
+  //private final MotorController m_backRightMotor = new PWMSparkMax(4);
+  private final CANSparkMax m_backRightMotor = new CANSparkMax(Constants.BACK_RIGHT_MOTOR,MotorType.kBrushless);
 
-  private final Encoder m_frontLeftEncoder = new Encoder(0, 1);
-  private final Encoder m_frontRightEncoder = new Encoder(2, 3);
-  private final Encoder m_backLeftEncoder = new Encoder(4, 5);
-  private final Encoder m_backRightEncoder = new Encoder(6, 7);
+  //private final Encoder m_frontLeftEncoder = new Encoder(0, 1);
+  private final RelativeEncoder m_frontLeftEncoder;
+  //private final Encoder m_frontRightEncoder = new Encoder(2, 3);
+  private final RelativeEncoder m_frontRightEncoder;
+  //private final Encoder m_backLeftEncoder = new Encoder(4, 5);
+  private final RelativeEncoder m_backLeftEncoder;
+  //private final Encoder m_backRightEncoder = new Encoder(6, 7);
+  private final RelativeEncoder m_backRightEncoder;
 
   private final Translation2d m_frontLeftLocation = new Translation2d(0.381, 0.381);
   private final Translation2d m_frontRightLocation = new Translation2d(0.381, -0.381);
@@ -44,7 +60,8 @@ public class Drivetrain extends SubsystemBase {
   private final PIDController m_backLeftPIDController = new PIDController(1, 0, 0);
   private final PIDController m_backRightPIDController = new PIDController(1, 0, 0);
 
-  private final AnalogGyro m_gyro = new AnalogGyro(0);
+  //private final AnalogGyro m_gyro = new AnalogGyro(0);
+  private final ADXRS450_Gyro m_gyro = new ADXRS450_Gyro();
 
   private final MecanumDriveKinematics m_kinematics =
       new MecanumDriveKinematics(
@@ -54,7 +71,7 @@ public class Drivetrain extends SubsystemBase {
       new MecanumDriveOdometry(m_kinematics, m_gyro.getRotation2d(), getCurrentDistances());
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(1, 3);
+  private final SimpleMotorFeedforward m_feedforward = new SimpleMotorFeedforward(Constants.FF_STATIC_GAIN,  Constants.FF_VELOCITY_GAIN);
 
   /** Constructs a MecanumDrive and resets the gyro. */
   public Drivetrain() {
@@ -62,8 +79,17 @@ public class Drivetrain extends SubsystemBase {
     // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
-    m_frontRightMotor.setInverted(true);
-    m_backRightMotor.setInverted(true);
+    m_frontLeftMotor.setInverted(Constants.FRONT_LEFT_MOTOR_INVERTED);
+    m_frontRightMotor.setInverted(Constants.FRONT_RIGHT_MOTOR_INVERTED);
+    m_backLeftMotor.setInverted(Constants.BACK_LEFT_MOTOR_INVERTED);
+    m_backRightMotor.setInverted(Constants.BACK_RIGHT_MOTOR_INVERTED);
+
+    m_frontLeftEncoder = m_frontLeftMotor.getEncoder();
+    m_frontRightEncoder = m_frontRightMotor.getEncoder();
+    m_backLeftEncoder = m_backLeftMotor.getEncoder();
+    m_backRightEncoder = m_backRightMotor.getEncoder();
+
+
   }
 
   /**
@@ -73,10 +99,15 @@ public class Drivetrain extends SubsystemBase {
    */
   public MecanumDriveWheelSpeeds getCurrentState() {
     return new MecanumDriveWheelSpeeds(
-        m_frontLeftEncoder.getRate(),
-        m_frontRightEncoder.getRate(),
-        m_backLeftEncoder.getRate(),
-        m_backRightEncoder.getRate());
+        //m_frontLeftEncoder.getRate(),
+        m_frontLeftEncoder.getVelocity(),
+        //m_frontRightEncoder.getRate(),
+        m_frontRightEncoder.getVelocity(),
+        //m_backLeftEncoder.getRate(),
+        m_backLeftEncoder.getVelocity(),
+        //m_backRightEncoder.getRate()
+        m_backRightEncoder.getVelocity()
+        );
   }
 
   /**
@@ -85,11 +116,21 @@ public class Drivetrain extends SubsystemBase {
    * @return The current distances measured by the drivetrain.
    */
   public MecanumDriveWheelPositions getCurrentDistances() {
+      m_frontLeftEncoder.setPositionConversionFactor(Constants.WHEEL_CIRCUMFERENCE);
+      m_frontRightEncoder.setPositionConversionFactor(Constants.WHEEL_CIRCUMFERENCE);
+      m_backLeftEncoder.setPositionConversionFactor(Constants.WHEEL_CIRCUMFERENCE);
+      m_backRightEncoder.setPositionConversionFactor(Constants.WHEEL_CIRCUMFERENCE);
+
     return new MecanumDriveWheelPositions(
-        m_frontLeftEncoder.getDistance(),
-        m_frontRightEncoder.getDistance(),
-        m_backLeftEncoder.getDistance(),
-        m_backRightEncoder.getDistance());
+        m_frontLeftEncoder.getPosition(),
+        //m_frontLeftEncoder.getDistance(),
+        m_frontRightEncoder.getPosition(),
+        //m_frontRightEncoder.getDistance(),
+        m_backLeftEncoder.getPosition(),
+        //m_backLeftEncoder.getDistance(),
+        m_backRightEncoder.getPosition()
+        //m_backRightEncoder.getDistance()
+        );
   }
 
   /**
@@ -105,16 +146,23 @@ public class Drivetrain extends SubsystemBase {
 
     final double frontLeftOutput =
         m_frontLeftPIDController.calculate(
-            m_frontLeftEncoder.getRate(), speeds.frontLeftMetersPerSecond);
+            m_frontLeftEncoder.getVelocity(), speeds.frontLeftMetersPerSecond);
+            //m_frontLeftEncoder.getRate(), speeds.frontLeftMetersPerSecond);
+
     final double frontRightOutput =
         m_frontRightPIDController.calculate(
-            m_frontRightEncoder.getRate(), speeds.frontRightMetersPerSecond);
+            m_frontRightEncoder.getVelocity(), speeds.frontRightMetersPerSecond);
+            //m_frontRightEncoder.getRate(), speeds.frontRightMetersPerSecond);
+
     final double backLeftOutput =
         m_backLeftPIDController.calculate(
-            m_backLeftEncoder.getRate(), speeds.rearLeftMetersPerSecond);
+            m_backLeftEncoder.getVelocity(), speeds.rearLeftMetersPerSecond);
+            //m_backLeftEncoder.getRate(), speeds.rearLeftMetersPerSecond);
+
     final double backRightOutput =
         m_backRightPIDController.calculate(
-            m_backRightEncoder.getRate(), speeds.rearRightMetersPerSecond);
+            m_backRightEncoder.getVelocity(), speeds.rearRightMetersPerSecond);
+            //m_backRightEncoder.getRate(), speeds.rearRightMetersPerSecond);
 
     m_frontLeftMotor.setVoltage(frontLeftOutput + frontLeftFeedforward);
     m_frontRightMotor.setVoltage(frontRightOutput + frontRightFeedforward);
